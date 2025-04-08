@@ -1,9 +1,16 @@
 package com.example.mobilesecurity1;
-
+import android.Manifest;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.os.Build;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.BatteryManager;
+
+import androidx.core.app.ActivityCompat;
 
 public class SecurityCheckManager {
 
@@ -26,5 +33,39 @@ public class SecurityCheckManager {
         return false;
     }
 
-    // בהמשך: methods like isLocationEnabled(), isWifiConnected(), etc.
+    public boolean hasLocationPermission() {
+        return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager != null &&
+                (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                        || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+    }
+    public boolean areHeadphonesConnected() {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+        if (audioManager == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+            for (AudioDeviceInfo device : devices) {
+                int type = device.getType();
+                if (type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
+                        type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+                        type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
+                        type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+                    return true;
+                }
+            }
+        } else {
+            // למכשירים ישנים - פתרון פשוט
+            return audioManager.isWiredHeadsetOn() || audioManager.isBluetoothA2dpOn();
+        }
+
+        return false;
+    }
+
 }
