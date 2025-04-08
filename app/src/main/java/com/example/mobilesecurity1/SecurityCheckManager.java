@@ -11,7 +11,8 @@ import android.location.LocationManager;
 import android.os.BatteryManager;
 
 import androidx.core.app.ActivityCompat;
-
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 public class SecurityCheckManager {
 
     private final Context context;
@@ -65,6 +66,26 @@ public class SecurityCheckManager {
             return audioManager.isWiredHeadsetOn() || audioManager.isBluetoothA2dpOn();
         }
 
+        return false;
+    }
+    public boolean isConnectedToSpecificWifi(String targetSsid) {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager == null) return false;
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return false; // אין הרשאה
+        }
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        if (wifiInfo != null) {
+            String currentSsid = wifiInfo.getSSID();
+            if (currentSsid != null) {
+                // SSID מגיע לעיתים עם גרשיים – נסיר אותם
+                currentSsid = currentSsid.replace("\"", "");
+                return currentSsid.equals(targetSsid);
+            }
+        }
         return false;
     }
 

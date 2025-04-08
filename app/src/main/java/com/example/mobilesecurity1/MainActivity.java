@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private int pendingStepRequiringPermission = -1;
     private SensorManager sensorManager;
     private SensorEventListener tiltListener;
+    private SensorEventListener lightListener;
 
     private Button[] stepButtons;
     private SecurityCheckManager checkManager;
@@ -91,8 +92,26 @@ public class MainActivity extends AppCompatActivity {
                         startTiltDetection(stepNumber); // נתחיל להאזין להטייה
                         return;
                     }
+                    if (stepNumber == 5) {
+                        if (!checkManager.hasLocationPermission()) {
+                            pendingStepRequiringPermission = stepNumber;
+                            ActivityCompat.requestPermissions(this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    REQUEST_LOCATION_PERMISSION);
+                            return;
+                        }
 
-                    // כל שאר השלבים (3–6) – פעולה מדומה
+                        if (checkManager.isConnectedToSpecificWifi("MyHomeWiFi")) {
+                            markStepAsCompleted(stepNumber);
+                        } else {
+                            showFailureMessage("יש להתחבר לרשת ה-WiFi בשם MyHomeWiFi");
+                        }
+                        return;
+                    }
+                    if (stepNumber == 6) {
+                        startLightDetection(stepNumber);
+                        return;
+                    }
                     markStepAsCompleted(stepNumber);
                 })
 
@@ -166,6 +185,34 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage(message)
                 .setPositiveButton("אישור", null)
                 .show();
+    }
+    private void startLightDetection(int stepNumber) {
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        if (lightSensor == null) {
+            showFailureMessage("לא נמצא חיישן אור במכשיר");
+            return;
+        }
+
+        lightListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float lux = event.values[0]; // ערך התאורה
+
+                // בואי נגיד שהצלחה זה כשהאור נמוך מ-30
+                if (lux < 30.0f) {
+                    sensorManager.unregisterListener(this);
+                    markStepAsCompleted(stepNumber);
+                    showSuccessMessage("זוהתה סביבה חשוכה - הצלחה!");
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        };
+
+        sensorManager.registerListener(lightListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 
