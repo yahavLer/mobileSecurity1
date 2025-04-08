@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4f4f4">
+
+    <TextView
+        android:id="@+id/title"
+        android:text="בצע את כל השלבים\n על מנת להתחבר"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- נקודת מרכז -->
+    <View
+        android:id="@+id/centerView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 6 שלבים במעגל -->
+    <Button
+        android:id="@+id/step1"
+        style="@style/CircleButtonStyle"
+        android:text="1"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="270" />
+
+    <Button
+        android:id="@+id/step2"
+        style="@style/CircleButtonStyle"
+        android:text="2"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="330" />
+
+    <Button
+        android:id="@+id/step3"
+        style="@style/CircleButtonStyle"
+        android:text="3"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="30" />
+
+    <Button
+        android:id="@+id/step4"
+        style="@style/CircleButtonStyle"
+        android:text="4"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="90" />
+
+    <Button
+        android:id="@+id/step5"
+        style="@style/CircleButtonStyle"
+        android:text="5"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="150" />
+
+    <Button
+        android:id="@+id/step6"
+        style="@style/CircleButtonStyle"
+        android:text="6"
+        app:layout_constraintCircle="@id/centerView"
+        app:layout_constraintCircleRadius="160dp"
+        app:layout_constraintCircleAngle="210" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
