@@ -1,4 +1,5 @@
 package com.example.mobilesecurity1;
+
 import android.Manifest;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
@@ -18,15 +19,16 @@ import androidx.core.content.ContextCompat;
 import android.media.MediaPlayer;
 
 public class MainActivity extends AppCompatActivity {
+
     private static final int REQUEST_LOCATION_PERMISSION = 101;
     private int pendingStepRequiringPermission = -1;
     private SensorManager sensorManager;
     private SensorEventListener tiltListener;
     private SensorEventListener lightListener;
     private boolean[] stepsCompleted = new boolean[6];
-
     private Button[] stepButtons;
     private SecurityCheckManager checkManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,84 +59,101 @@ public class MainActivity extends AppCompatActivity {
                 "בדיקת תאורה / בהירות"
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("שלב " + stepNumber)
+        new AlertDialog.Builder(this)
+                .setTitle("שלב " + stepNumber)
                 .setMessage("האם לבצע את: " + dummyTasks[stepNumber - 1] + "?")
-                .setPositiveButton("בצע", (dialog, which) -> {
-
-                    if (stepNumber == 1) {
-                        showInstructionsAndRun(stepNumber, () -> {
-                            if (checkManager.isBatteryAboveThreshold(50)) {
-                                markStepAsCompleted(stepNumber);
-                            } else {
-                                showFailureMessage("יש להטעין את הסוללה ליותר מ-50%");
-                            }
-                        });
-                        return;
-                    }
-
-                    if (stepNumber == 2) {
-                        showInstructionsAndRun(stepNumber, () -> {
-                            if (!checkManager.hasLocationPermission()) {
-                                pendingStepRequiringPermission = stepNumber;
-                                ActivityCompat.requestPermissions(this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        REQUEST_LOCATION_PERMISSION);
-                            } else if (!checkManager.isLocationEnabled()) {
-                                showFailureMessage("שירותי המיקום אינם פעילים");
-                            } else {
-                                markStepAsCompleted(stepNumber);
-                            }
-                        });
-                        return;
-                    }
-
-                    if (stepNumber == 3) {
-                        showInstructionsAndRun(stepNumber, () -> {
-                            if (checkManager.areHeadphonesConnected()) {
-                                markStepAsCompleted(stepNumber);
-                            } else {
-                                showFailureMessage("יש לחבר אוזניות (חוטיות או בלוטות')");
-                            }
-                        });
-                        return;
-                    }
-
-                    if (stepNumber == 4) {
-                        showInstructionsAndRun(stepNumber, () -> startTiltDetection(stepNumber));
-                        return;
-                    }
-
-                    if (stepNumber == 5) {
-                        showInstructionsAndRun(stepNumber, () -> {
-                            if (!checkManager.hasLocationPermission()) {
-                                pendingStepRequiringPermission = stepNumber;
-                                ActivityCompat.requestPermissions(this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        REQUEST_LOCATION_PERMISSION);
-                                return;
-                            }
-
-                            if (checkManager.isConnectedToSpecificWifi("Motti")) {
-                                markStepAsCompleted(stepNumber);
-                            } else {
-                                showFailureMessage("יש להתחבר לרשת ה-WiFi בשם MyHomeWiFi");
-                            }
-                        });
-                        return;
-                    }
-
-                    if (stepNumber == 6) {
-                        showInstructionsAndRun(stepNumber, () -> startLightDetection(stepNumber));
-                        return;
-                    }
-
-                    // ברירת מחדל – שלב כללי
-                    markStepAsCompleted(stepNumber);
-                })
+                .setPositiveButton("בצע", (dialog, which) -> handleStepExecution(stepNumber))
                 .setNegativeButton("ביטול", null)
                 .show();
     }
+
+    private void handleStepExecution(int stepNumber) {
+        switch (stepNumber) {
+            case 1:
+                executeBatteryCheck(stepNumber);
+                break;
+            case 2:
+                executeLocationCheck(stepNumber);
+                break;
+            case 3:
+                executeHeadphonesCheck(stepNumber);
+                break;
+            case 4:
+                executeTiltCheck(stepNumber);
+                break;
+            case 5:
+                executeWifiCheck(stepNumber);
+                break;
+            case 6:
+                executeLightCheck(stepNumber);
+                break;
+            default:
+                markStepAsCompleted(stepNumber);
+        }
+    }
+
+    private void executeBatteryCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> {
+            if (checkManager.isBatteryAboveThreshold(50)) {
+                markStepAsCompleted(stepNumber);
+            } else {
+                showFailureMessage("יש להטעין את הסוללה ליותר מ-50%");
+            }
+        });
+    }
+
+    private void executeLocationCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> {
+            if (!checkManager.hasLocationPermission()) {
+                pendingStepRequiringPermission = stepNumber;
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_PERMISSION);
+            } else if (!checkManager.isLocationEnabled()) {
+                showFailureMessage("שירותי המיקום אינם פעילים");
+            } else {
+                markStepAsCompleted(stepNumber);
+            }
+        });
+    }
+
+    private void executeHeadphonesCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> {
+            if (checkManager.areHeadphonesConnected()) {
+                markStepAsCompleted(stepNumber);
+            } else {
+                showFailureMessage("יש לחבר אוזניות (חוטיות או בלוטות')");
+            }
+        });
+    }
+
+    private void executeTiltCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> startTiltDetection(stepNumber));
+    }
+
+    private void executeWifiCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> {
+            if (!checkManager.hasLocationPermission()) {
+                pendingStepRequiringPermission = stepNumber;
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_PERMISSION);
+                return;
+            }
+
+            if (checkManager.isConnectedToSpecificWifi("Motti")) {
+                markStepAsCompleted(stepNumber);
+            } else {
+                showFailureMessage("יש להתחבר לרשת ה-WiFi בשם MyHomeWiFi");
+            }
+        });
+    }
+
+    private void executeLightCheck(int stepNumber) {
+        showInstructionsAndRun(stepNumber, () -> startLightDetection(stepNumber));
+    }
+
+
     private void markStepAsCompleted(int stepNumber) {
         Button button = stepButtons[stepNumber - 1];
         button.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_green_dark));
@@ -153,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("אישור", null)
                 .show();
     }
+
     private void showInstructionsAndRun(int stepNumber, Runnable onAcknowledge) {
         String message = "";
         switch (stepNumber) {
@@ -194,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
             pendingStepRequiringPermission = -1;
         }
     }
+
     private void startTiltDetection(int stepNumber) {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -224,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
 
         sensorManager.registerListener(tiltListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
     private void showSuccessMessage(String message) {
         new AlertDialog.Builder(this)
                 .setTitle("בדיקה הצליחה")
@@ -231,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("אישור", null)
                 .show();
     }
+
     private void startLightDetection(int stepNumber) {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
@@ -265,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(MediaPlayer::release);
         mediaPlayer.start();
     }
+
     private void checkIfAllStepsCompleted() {
         for (boolean stepDone : stepsCompleted) {
             if (!stepDone) {
@@ -283,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("סיום", (dialog, which) -> finish())
                 .show();
     }
+
     private void showSuccessAnimation(Button targetButton) {
         targetButton.setScaleX(0.8f);
         targetButton.setScaleY(0.8f);

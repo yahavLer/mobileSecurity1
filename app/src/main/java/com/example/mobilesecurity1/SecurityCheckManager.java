@@ -45,6 +45,7 @@ public class SecurityCheckManager {
                 (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                         || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
     }
+
     public boolean areHeadphonesConnected() {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
@@ -68,6 +69,7 @@ public class SecurityCheckManager {
 
         return false;
     }
+
     public boolean isConnectedToSpecificWifi(String targetSsid) {
         WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager == null) return false;
@@ -88,5 +90,4 @@ public class SecurityCheckManager {
         }
         return false;
     }
-
 }
