@@ -62,7 +62,7 @@ public class SecurityCheckManager {
                 }
             }
         } else {
-            // למכשירים ישנים - פתרון פשוט
+            // למכשירים ישנים
             return audioManager.isWiredHeadsetOn() || audioManager.isBluetoothA2dpOn();
         }
 
@@ -81,7 +81,7 @@ public class SecurityCheckManager {
         if (wifiInfo != null) {
             String currentSsid = wifiInfo.getSSID();
             if (currentSsid != null) {
-                // SSID מגיע לעיתים עם גרשיים – נסיר אותם
+                // הסרת הגרשיים מ ssid
                 currentSsid = currentSsid.replace("\"", "");
                 return currentSsid.equals(targetSsid);
             }

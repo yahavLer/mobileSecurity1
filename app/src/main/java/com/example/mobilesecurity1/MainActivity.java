@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                 float y = event.values[1]; // תזוזה בציר אנכי
                 float z = event.values[2]; // תזוזה בציר עומק
 
-                // דוגמה: אם הטלפון מוטה ימינה (x < -5)
+                // אם הטלפון מוטה ימינה (x < -5)
                 if (x < -5.0f) {
                     sensorManager.unregisterListener(this);
                     markStepAsCompleted(stepNumber);
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent event) {
                 float lux = event.values[0]; // ערך התאורה
 
-                // בואי נגיד שהצלחה זה כשהאור נמוך מ-30
+                //  הצלחה זה כשהאור נמוך מ-30
                 if (lux < 30.0f) {
                     sensorManager.unregisterListener(this);
                     markStepAsCompleted(stepNumber);
@@ -292,6 +292,4 @@ public class MainActivity extends AppCompatActivity {
                 .setDuration(300)
                 .start();
     }
-
-
 }
