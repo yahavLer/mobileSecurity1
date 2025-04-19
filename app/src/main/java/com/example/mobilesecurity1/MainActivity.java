@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             if (checkManager.isConnectedToSpecificWifi("Motti")) {
                 markStepAsCompleted(stepNumber);
             } else {
-                showFailureMessage("יש להתחבר לרשת ה-WiFi בשם MyHomeWiFi");
+                showFailureMessage("יש להתחבר לרשת ה-WiFi בשם Motti");
             }
         });
     }
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             case 4:
                 message = "הטלטל את הטלפון ימינה כך שיהיה מוטה בזווית חדה. המערכת תזהה את ההטיה."; break;
             case 5:
-                message = "יש להיות מחובר לרשת Wi-Fi בשם: MyHomeWiFi כדי לעבור את הבדיקה."; break;
+                message = "יש להיות מחובר לרשת Wi-Fi בשם: Motti כדי לעבור את הבדיקה."; break;
             case 6:
                 message = "הבדיקה תצליח אם הסביבה חשוכה – למשל אם תכסה את הטלפון עם היד."; break;
         }
